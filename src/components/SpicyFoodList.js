@@ -5,38 +5,47 @@ function SpicyFoodList() {
   const [foods, setFoods] = useState(spicyFoods);
   const [filterBy, setFilterBy] = useState('All');
 
-  const foodsToDisplay = foods.filter( food => {
+  function handleAddClick(e) {
+    const getNewFood = getNewSpicyFood();
+    const newFoodArray = [...foods, getNewFood];
+    setFoods(newFoodArray);
+  }
+
+  function handleLiClick(clickedId) {
+    const newFoodArray = foods.map((food) => {
+      if (food.id === clickedId) {
+        return {
+          ...food,
+          heatLevel: food.heatLevel + 1
+        };
+      } else {
+        return food;
+      }
+    });
+    setFoods(newFoodArray)
+  }; 
+
+  function handleCausineChange(e) {
+    setFilterBy(e.target.value)
+  };
+
+  const filteredArray = foods.filter((food) => {
     if (filterBy === 'All') {
       return true;
     } else {
-      return food.cuisine === filterBy;
+      return (food.cuisine === filterBy);
     }
   });
 
-  function handleAddFood() {
-    const newFood = getNewSpicyFood();
-    const newFoodArray = [...foods, newFood];
-    setFoods(newFoodArray);
-  }
-
-  function handleiClick(id) {
-    const newFoodArray = foods.map( food => food.id === id ? {...food, heatLevel: food.heatLevel + 1} : food );
-    setFoods(newFoodArray);
-  }
-
-  const foodList = foodsToDisplay.map( food => (
-    <li key={food.id} onClick={() => handleiClick(food.id)}>
-      {food.name} | Heat: {food.heatLevel} | Cuisine: {food.cuisine}
+  const foodToDisplay = filteredArray.map((food) => (
+    <li key={food.id} onClick={() => handleLiClick(food.id)}>
+      {food.name} | {food.heatLevel} | {food.cuisine}
     </li>
-  ));
-
-  function handleFilterChange(e) {
-    setFilterBy(e.target.value);
-  }
+  ))
 
   return (
     <div>
-      <select name="filter" onChange={handleFilterChange}>
+      <select name="filter" onChange={handleCausineChange}>
         <option value="All">All</option>
         <option value="American">American</option>
         <option value="Sichuan">Sichuan</option>
@@ -45,8 +54,8 @@ function SpicyFoodList() {
       </select>
       <br></br>
       <br></br>
-      <button onClick={handleAddFood}>Add New Food</button>
-      <ul>{foodList}</ul>
+      <button onClick={handleAddClick}>Add New Food</button>
+      <ul>{foodToDisplay}</ul>
     </div>
   );
 }
